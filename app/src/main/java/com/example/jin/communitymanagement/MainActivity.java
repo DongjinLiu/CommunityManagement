@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new HomeFragment());
         adapter.addFragment(new BorrowFragment());
         adapter.addFragment(new DateFragment());
-        adapter.addFragment(new MineFragment());
         adapter.addFragment(new MoneyFragment());
+        adapter.addFragment(new MineFragment());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
