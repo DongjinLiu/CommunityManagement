@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment {
         initAssociationActivity();
        View view= inflater.inflate(R.layout.fragment_home, container, false);
         RecyclerView recyclerView=(RecyclerView)view.findViewById(R.id.home_recycler_view);
-        GridLayoutManager layoutManager=new GridLayoutManager(getContext(),2);
+        GridLayoutManager layoutManager=new GridLayoutManager(getContext(),1);
         recyclerView.setLayoutManager(layoutManager);
         adapter=new AssociationActivityAdapter(associationActivityList);
         recyclerView.setAdapter(adapter);
@@ -46,6 +46,10 @@ public class HomeFragment extends Fragment {
     private void initAssociationActivity()
     {
         associationActivityList.clear();
+        for (int i=0;i<associationActivities.length;i++)
+        {
+            associationActivityList.add(associationActivities[i]);
+        }
         for (int i=0;i<associationActivities.length;i++)
         {
             associationActivityList.add(associationActivities[i]);
