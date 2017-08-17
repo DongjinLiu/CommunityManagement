@@ -13,7 +13,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by summe on 2017/8/15.
@@ -76,4 +79,65 @@ public class AssociationActivityAdapter extends RecyclerView.Adapter<Association
     public int getItemCount() {
         return m_association_ac_List.size();
     }
+
+    public void setFilter(List<AssociationActivity> association_ac_List)
+    {
+        m_association_ac_List=new ArrayList<>();
+        m_association_ac_List.addAll(association_ac_List);
+        notifyDataSetChanged();
+    }
+
+
+    public void addItem(int position,AssociationActivity associationActivity)
+    {
+        m_association_ac_List.add(position,associationActivity);
+        notifyItemInserted(position);
+    }
+    public AssociationActivity removeItem(int position)
+    {
+        final  AssociationActivity associationActivity=m_association_ac_List.remove(position);
+        notifyItemRemoved(position);
+        return associationActivity;
+    }
+    public void moveItem(int fromPosition,int toPosition)
+    {
+        final AssociationActivity associationActivity=m_association_ac_List.remove(fromPosition);
+        m_association_ac_List.add(toPosition,associationActivity);
+        notifyItemMoved(fromPosition,toPosition);
+    }
+    private void applyAndAnimateMovedItems(List<AssociationActivity> association_ac_List)
+    {
+        for (int toPosition = association_ac_List.size() - 1; toPosition >= 0; toPosition--) {
+            final AssociationActivity associationActivity = association_ac_List.get(toPosition);
+            final int fromPosition = m_association_ac_List.indexOf(associationActivity);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
+
+    }
+    private void applyAndAnimateAdditions(List<AssociationActivity> association_ac_List) {
+        for (int i = 0, count = association_ac_List.size(); i < count; i++) {
+            final AssociationActivity associationActivity = association_ac_List.get(i);
+            if (!m_association_ac_List.contains(associationActivity)) {
+                addItem(i, associationActivity);
+            }
+        }
+    }
+    private void applyAndAnimateRemovals(List<AssociationActivity> association_ac_List) {
+        for (int i = m_association_ac_List.size() - 1; i >= 0; i--) {
+            final AssociationActivity associationActivity = m_association_ac_List.get(i);
+            if (!association_ac_List.contains(associationActivity)) {
+                removeItem(i);
+            }
+        }
+    }
+
+    public void animateTo(List<AssociationActivity> association_ac_List) {
+        applyAndAnimateRemovals(association_ac_List);
+        applyAndAnimateAdditions(association_ac_List);
+        applyAndAnimateMovedItems(association_ac_List);
+    }
+
+
 }

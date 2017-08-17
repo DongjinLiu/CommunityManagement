@@ -3,16 +3,22 @@ package com.example.jin.communitymanagement;
 import android.content.Intent;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -21,7 +27,10 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import layout.BorrowFragment;
 import layout.DateFragment;
 import layout.HomeFragment;
@@ -29,6 +38,8 @@ import layout.MineFragment;
 import layout.MoneyFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
     private ViewPager viewPager;
 
     private MainViewPagerAdapter adapter;
@@ -38,10 +49,16 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
 
+
     private MaterialSearchView searchView;
 
     //做标签，说明现在是属于哪一个fragment
     public static int MARK = 0;
+
+
+    //HomeFragment控件区域
+
+
 
 
     @Override
@@ -49,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+
+        ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
         operateToolBar();
         initBottomNavigation();
@@ -57,7 +76,11 @@ public class MainActivity extends AppCompatActivity {
 
         initSearchView();
 
+
     }
+
+    //初始化homeFragment里的操作
+
 
     //当主页背景被按下时候，关闭搜索框
 
@@ -88,37 +111,17 @@ public class MainActivity extends AppCompatActivity {
     //初始化搜索框
     private void initSearchView()
     {
+
+
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //Do some magic
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                return false;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
 
 
-        });
-        searchView.setVoiceSearch(true); //or false
+
     }
-//语音识别反馈
+
+
+
+    //语音识别反馈
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
@@ -126,8 +129,12 @@ public class MainActivity extends AppCompatActivity {
             if (matches != null && matches.size() > 0) {
                 String searchWrd = matches.get(0);
                 if (!TextUtils.isEmpty(searchWrd)) {
-                    searchView.setQuery(searchWrd, false);
+                    Log.d(TAG, "onActivityResult: 到if里面啦");
+                    Intent intentVoice=new Intent("com.example.jin.communitymanagement.GET_THE_VOICE");
+                    intentVoice.putExtra(HomeFragment.GET_THE_VOICE,searchWrd);
+                    sendBroadcast(intentVoice);
                 }
+
             }
             return;
         }
@@ -139,12 +146,22 @@ public class MainActivity extends AppCompatActivity {
     private void initViewPager()
     {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter=new MainViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment());
-        adapter.addFragment(new BorrowFragment());
-        adapter.addFragment(new DateFragment());
-        adapter.addFragment(new MoneyFragment());
-        adapter.addFragment(new MineFragment());
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.clear();
+        fragments.add(new HomeFragment());
+        fragments.add(new BorrowFragment());
+        fragments.add(new DateFragment());
+        fragments.add(new MoneyFragment());
+        fragments.add(new MineFragment());
+        adapter=new MainViewPagerAdapter(getSupportFragmentManager(),fragments);
+
+//        MainViewPagerAdapter.setHomeFragment(new HomeFragment());
+//       MainViewPagerAdapter.setBorrowFragment(new BorrowFragment());
+//        MainViewPagerAdapter.setDateFragment(new DateFragment());
+//        MainViewPagerAdapter.setMoneyFragment(new MoneyFragment());
+//        MainViewPagerAdapter.setMineFragment(new MineFragment());
+
+
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
