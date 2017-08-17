@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -190,6 +191,9 @@ public class HomeFragment extends Fragment {
         association_ac_adapter =new AssociationActivityAdapter(associationActivityList);
         homeRecyclerView.setAdapter(association_ac_adapter);
         HeaderAdapter headerAdapter=new HeaderAdapter(association_ac_adapter);
+        LayoutInflater inflater_header=LayoutInflater.from(getContext());
+        View view=inflater_header.inflate(R.layout.home_header_cardview,null);
+        headerAdapter.addHeaderView(view);
         homeRecyclerView.setAdapter(headerAdapter);
 
     }
