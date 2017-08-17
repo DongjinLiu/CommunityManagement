@@ -3,15 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="SearchIt"
-        android:id="@+id/searchIt"
-        app:actionViewClass="android.support.v7.widget.SearchView"
-
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_action_search"
+        android:orderInCategory="100"
+        android:title="@string/abc_search_hint"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/search_filter"
-        android:title="search_filter"
-        android:icon="@drawable/filteryello"
-        app:showAsAction="always"/>
 </menu>

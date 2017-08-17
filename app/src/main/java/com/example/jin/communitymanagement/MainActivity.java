@@ -1,12 +1,15 @@
 package com.example.jin.communitymanagement;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.speech.RecognizerIntent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +18,9 @@ import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
+import java.util.ArrayList;
 
 import layout.BorrowFragment;
 import layout.DateFragment;
@@ -32,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
 
+    private MaterialSearchView searchView;
 
     //做标签，说明现在是属于哪一个fragment
-    public static int MARK=0;
-
+    public static int MARK = 0;
 
 
     @Override
@@ -49,10 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
         initViewPager();
 
+        initSearchView();
 
+    }
 
+    //当主页背景被按下时候，关闭搜索框
 
-
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
 
     }
 
@@ -63,14 +78,63 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private  void operateToolBar()
-    {
-        toolbar=(Toolbar)findViewById(R.id.toolbar);
+    private void operateToolBar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
 
+    //初始化搜索框
+    private void initSearchView()
+    {
+        searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Do some magic
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+
+
+        });
+        searchView.setVoiceSearch(true); //or false
+    }
+//语音识别反馈
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MaterialSearchView.REQUEST_VOICE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && matches.size() > 0) {
+                String searchWrd = matches.get(0);
+                if (!TextUtils.isEmpty(searchWrd)) {
+                    searchView.setQuery(searchWrd, false);
+                }
+            }
+            return;
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     private void initViewPager()
     {
@@ -153,61 +217,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    //下面这个函数主要是操作顶部搜索框
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar,menu);
-        MenuItem item = menu.findItem(R.id.searchIt);
 
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-        //设置搜索栏的默认提示
-        searchView.setQueryHint("请输入社团名，活动名");
-        //默认刚进去就打开搜索栏
-        searchView.setIconified(true);
-        //设置输入文本的EditText
-        searchView.setBackgroundColor(Color.parseColor("#444444"));
-        SearchView.SearchAutoComplete et = (SearchView.SearchAutoComplete)searchView.findViewById(R.id.search_src_text);
-        //设置搜索栏的默认提示，作用和setQueryHint相同
-        et.setHint("请输入社团名，活动名");
-        et.setTextSize(15.0f);
-        //设置提示文本的颜色
-
-        et.setHintTextColor(Color.parseColor("#777777"));
-        //设置输入文本的颜色
-
-        et.setTextColor(Color.YELLOW);
-        //设置提交按钮是否可见
-        //searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(MainActivity.this, "您输入的文本为" + query, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
 
 
         return true;
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
-            case R.id.search_filter:
-                Toast.makeText(this, "You clicked the search filter", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-        }
-        return true;
-    }
+
 
 
 }
