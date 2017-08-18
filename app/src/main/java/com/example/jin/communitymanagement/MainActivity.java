@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
     private void initBottomNavigation()
     {
         bottomNavigation=(AHBottomNavigation)findViewById(R.id.bottom_navigation);
-        AHBottomNavigationItem item1=new AHBottomNavigationItem("主页",R.drawable.home,R.color.colorAccent);
+        AHBottomNavigationItem item1=new AHBottomNavigationItem("主页",R.drawable.home,R.color.colorText);
         AHBottomNavigationItem item2=new AHBottomNavigationItem("租赁",R.drawable.borrow,R.color.colorPrimaryDark);
         AHBottomNavigationItem item3=new AHBottomNavigationItem("日程", R.drawable.date,R.color.colorPrimary);
         AHBottomNavigationItem item4=new AHBottomNavigationItem("赞助",R.drawable.money,R.color.colorPrimary);
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
 // Change colors
         //选中的颜色
-        bottomNavigation.setAccentColor(Color.parseColor("#FFFF00"));
+        bottomNavigation.setAccentColor(Color.parseColor("#FFcc00"));
         //非active的颜色
         bottomNavigation.setInactiveColor(Color.parseColor("#999999"));
 
