@@ -4,30 +4,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.jin.communitymanagement.AssociationActivity;
 import com.example.jin.communitymanagement.AssociationActivityAdapter;
 import com.example.jin.communitymanagement.HeaderAdapter;
+import com.example.jin.communitymanagement.HomeFlag;
+import com.example.jin.communitymanagement.HomeFlagAdapter;
 import com.example.jin.communitymanagement.MainViewPagerAdapter;
 import com.example.jin.communitymanagement.R;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -47,6 +56,10 @@ public class HomeFragment extends Fragment {
     private AssociationActivityAdapter association_ac_adapter;
     private AssociationActivity[] associationActivities={new AssociationActivity("热舞社ABC","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance)};
     private   RecyclerView homeRecyclerView;
+
+    //属性都在这里
+
+    private boolean assiciationOrActivity=false;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +140,7 @@ public class HomeFragment extends Fragment {
         initRecyclerView();
         initSwipeRefresh();
 
+
     }
     private void initSwipeRefresh()
     {
@@ -181,10 +195,6 @@ public class HomeFragment extends Fragment {
             homeRecyclerView=(RecyclerView) view.findViewById(R.id.home_recycler_view) ;
 
 
-        if(homeRecyclerView==null)
-        {
-            Log.d(TAG, "initRecyclerView: 他还是空的");
-        }
         GridLayoutManager layoutManager=new GridLayoutManager(getContext(),1);
 
         homeRecyclerView.setLayoutManager(layoutManager);
@@ -193,10 +203,81 @@ public class HomeFragment extends Fragment {
         HeaderAdapter headerAdapter=new HeaderAdapter(association_ac_adapter);
         LayoutInflater inflater_header=LayoutInflater.from(getContext());
         View view=inflater_header.inflate(R.layout.home_header_cardview,null);
+        initRecycHeader(view);
         headerAdapter.addHeaderView(view);
         homeRecyclerView.setAdapter(headerAdapter);
 
     }
+
+    private void initRecycHeader(View view) {
+        initHomeFlagList(view);
+
+
+        SegmentedGroup segmented= (SegmentedGroup)view.findViewById(R.id.group_home_segmented);
+       segmented.setTintColor(Color.parseColor("#FFcc00"));
+        segmented.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId)
+                {
+                    case R.id.btn_home_activity:
+                        Toast.makeText(getActivity(), "你选择了活动", Toast.LENGTH_SHORT).show();
+                        assiciationOrActivity=false;
+                        break;
+                    case R.id.btn_home_association:
+                        Toast.makeText(getActivity(), "你选择了社团", Toast.LENGTH_SHORT).show();
+                        assiciationOrActivity=true;
+                        break;
+                }
+            }
+        });
+
+    }
+
+    private void initHomeFlagList(View view) {
+        initActivityFlagList();
+        initAssociationFlagList();
+        RecyclerView recyclerViewFlag=(RecyclerView)view.findViewById(R.id.recycler_header_home);
+        LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerViewFlag.setLayoutManager(layoutManager);
+        HomeFlagAdapter adapterFlag=new HomeFlagAdapter(activityFlagList);
+        recyclerViewFlag.setAdapter(adapterFlag);
+    }
+
+    private List<HomeFlag> associationFlagList=new ArrayList<>();
+    private void initAssociationFlagList() {
+
+        HomeFlag dance=new HomeFlag(false,"舞蹈");
+        associationFlagList.add(dance);
+        HomeFlag opera=new HomeFlag(false,"话剧");
+        associationFlagList.add(opera);
+        HomeFlag song=new HomeFlag(false,"音乐");
+        associationFlagList.add(song);
+        HomeFlag literal=new HomeFlag(false,"文艺");
+        associationFlagList.add(literal);
+        HomeFlag outdoor=new HomeFlag(false,"户外");
+        associationFlagList.add(outdoor);
+        HomeFlag little=new HomeFlag(false,"小众");
+        associationFlagList.add(little);
+
+    }
+
+    private List<HomeFlag> activityFlagList=new ArrayList<>();
+    private void initActivityFlagList() {
+        HomeFlag literal=new HomeFlag(false,"文艺");
+        activityFlagList.add(literal);
+        HomeFlag quiet=new HomeFlag(false,"恬静");
+        activityFlagList.add(quiet);
+        HomeFlag crazy=new HomeFlag(false,"疯狂");
+        activityFlagList.add(crazy);
+        HomeFlag sexy=new HomeFlag(false,"骚气");
+        activityFlagList.add(sexy);
+        HomeFlag ghost=new HomeFlag(false,"诡异");
+        activityFlagList.add(ghost);
+
+    }
+
     private void initAssociationActivity()
     {
         associationActivityList.clear();
