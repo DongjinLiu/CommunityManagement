@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -58,8 +60,15 @@ public class HomeFragment extends Fragment {
     private   RecyclerView homeRecyclerView;
 
     //属性都在这里
+    private boolean AcOrAs=true;
+     private    HomeFlagAdapter adapterFlag;
 
-    private boolean assiciationOrActivity=false;
+    private List<HomeFlag> headerList=new ArrayList<>();
+
+    //广播看这里
+    private RefreshReceiver refreshReceiver;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +133,11 @@ public class HomeFragment extends Fragment {
         intentFilter.addAction("com.example.jin.communitymanagement.GET_THE_VOICE");
         voiceReceiver=new VoiceReceiver();
         getActivity().registerReceiver(voiceReceiver,intentFilter);
+
+        IntentFilter intentFilterRefresh=new IntentFilter();
+        intentFilterRefresh.addAction("com.example.jin.communitymanagement.RefreshReceiver");
+        refreshReceiver=new RefreshReceiver();
+        getActivity().registerReceiver(refreshReceiver,intentFilterRefresh);
     }
 
     @Override
@@ -133,6 +147,11 @@ public class HomeFragment extends Fragment {
         {
             getActivity().unregisterReceiver(voiceReceiver);
             voiceReceiver=null;
+        }
+        if(refreshReceiver!=null)
+        {
+            getActivity().unregisterReceiver(refreshReceiver);;
+            refreshReceiver=null;
         }
     }
 
@@ -215,6 +234,8 @@ public class HomeFragment extends Fragment {
 
         SegmentedGroup segmented= (SegmentedGroup)view.findViewById(R.id.group_home_segmented);
        segmented.setTintColor(Color.parseColor("#FFcc00"));
+        RadioButton radioActivity= (RadioButton)view.findViewById(R.id.btn_home_activity);
+        radioActivity.setChecked(true);
         segmented.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -222,13 +243,15 @@ public class HomeFragment extends Fragment {
                 {
                     case R.id.btn_home_activity:
                         Toast.makeText(getActivity(), "你选择了活动", Toast.LENGTH_SHORT).show();
-                        assiciationOrActivity=false;
+                        AcOrAs=true;
                         break;
                     case R.id.btn_home_association:
                         Toast.makeText(getActivity(), "你选择了社团", Toast.LENGTH_SHORT).show();
-                        assiciationOrActivity=true;
+                        AcOrAs=false;
                         break;
                 }
+                Intent intentRefresh=new Intent("com.example.jin.communitymanagement.RefreshReceiver");
+                getActivity().sendBroadcast(intentRefresh);
             }
         });
 
@@ -241,7 +264,9 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerViewFlag.setLayoutManager(layoutManager);
-        HomeFlagAdapter adapterFlag=new HomeFlagAdapter(activityFlagList);
+        headerList.clear();
+        headerList.addAll(activityFlagList);
+       adapterFlag =new HomeFlagAdapter(headerList);
         recyclerViewFlag.setAdapter(adapterFlag);
     }
 
@@ -260,6 +285,12 @@ public class HomeFragment extends Fragment {
         associationFlagList.add(outdoor);
         HomeFlag little=new HomeFlag(false,"小众");
         associationFlagList.add(little);
+        HomeFlag technology=new HomeFlag(false,"科技");
+        associationFlagList.add(technology);
+        HomeFlag practice=new HomeFlag(false,"实践");
+        associationFlagList.add(practice);
+        HomeFlag literature=new HomeFlag(false,"学术");
+        associationFlagList.add(literature);
 
     }
 
@@ -275,6 +306,10 @@ public class HomeFragment extends Fragment {
         activityFlagList.add(sexy);
         HomeFlag ghost=new HomeFlag(false,"诡异");
         activityFlagList.add(ghost);
+        HomeFlag technology=new HomeFlag(false,"科技");
+        activityFlagList.add(technology);
+        HomeFlag practice=new HomeFlag(false,"实践");
+        activityFlagList.add(practice);
 
     }
 
@@ -316,6 +351,27 @@ public class HomeFragment extends Fragment {
           String searchWrd=  intent.getStringExtra(GET_THE_VOICE);
             searchView.setQuery(searchWrd,false);
 
+        }
+    }
+    class  RefreshReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getActivity().runOnUiThread( new Runnable() {
+                @Override
+                public void run() {
+                    headerList.clear();
+                    if(AcOrAs)
+                    {
+                        headerList.addAll(activityFlagList);
+
+                    }else
+                    {
+                        headerList.addAll(associationFlagList);
+                    }
+                    adapterFlag.notifyDataSetChanged();
+
+                }
+            } );
         }
     }
 }

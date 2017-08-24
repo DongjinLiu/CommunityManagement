@@ -2,14 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="60dp">
     <com.bigmercu.cBox.CheckBox
         android:id="@+id/checkbox_flag_home"
-        android:padding="5dp"
+        android:paddingTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:check_text=""
+        android:paddingLeft="15dp"
         app:show_border="true"
         app:color_after="@color/colorText"
         app:color_before="@color/homeCardColor"
@@ -22,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="2dp"/>
+        android:textSize="15sp"
+        />
 
 </LinearLayout>
