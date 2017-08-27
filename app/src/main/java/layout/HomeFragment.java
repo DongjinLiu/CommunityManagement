@@ -1,5 +1,8 @@
 package layout;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,10 +28,12 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jin.communitymanagement.AssociationActivity;
 import com.example.jin.communitymanagement.AssociationActivityAdapter;
+import com.example.jin.communitymanagement.EditAssociationActivityActivity;
 import com.example.jin.communitymanagement.HeaderAdapter;
 import com.example.jin.communitymanagement.HomeFlag;
 import com.example.jin.communitymanagement.HomeFlagAdapter;
@@ -69,6 +75,19 @@ public class HomeFragment extends Fragment {
     private RefreshReceiver refreshReceiver;
 
 
+    //控件在这里
+    private FloatingActionButton fab_function;
+    private FloatingActionButton fabAdd;
+    private FloatingActionButton fabFilter;
+    private TextView textViewAdd;
+    private TextView textViewFilter;
+    private TextView backPaper;
+    private boolean fabIsOpen=false;
+    //动画在这里呀
+    private AnimatorSet animatorSetClose;
+    private boolean animatorCloseStart=false;
+
+    //重载函数
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,8 +101,10 @@ public class HomeFragment extends Fragment {
 
        view= inflater.inflate(R.layout.fragment_home, container, false);
 
+
         initHomeFragment();
         initSearchView();
+        initFabFunciton(view);
         return view;
     }
 
@@ -138,6 +159,10 @@ public class HomeFragment extends Fragment {
         intentFilterRefresh.addAction("com.example.jin.communitymanagement.RefreshReceiver");
         refreshReceiver=new RefreshReceiver();
         getActivity().registerReceiver(refreshReceiver,intentFilterRefresh);
+
+
+
+
     }
 
     @Override
@@ -344,6 +369,51 @@ public class HomeFragment extends Fragment {
         return filteredModelList;
     }
 
+    private void initFabFunciton(View view)
+    {
+         fabAdd=(FloatingActionButton)view.findViewById(R.id.fab_home_add_activity);
+        initFabAdd(fabAdd);
+          fabFilter=(FloatingActionButton)view.findViewById(R.id.fab_home_filter);
+        textViewAdd=(TextView)view.findViewById(R.id.text_home_add);
+        textViewFilter=(TextView)view.findViewById(R.id.text_home_filer);
+        textViewAdd.setVisibility(View.GONE);
+        textViewFilter.setVisibility(View.GONE);
+        fabAdd.setVisibility(View.GONE);
+        fabFilter.setVisibility(View.GONE);
+      backPaper =(TextView)view.findViewById(R.id.text_home_backPaper);
+        backPaper.setVisibility(View.GONE);
+        fab_function=(FloatingActionButton)view.findViewById(R.id.fab_home_function);
+        fab_function.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!fabIsOpen)
+                {
+                    fabIsOpen=true;
+                    animateABCOpen(v,fabAdd,fabFilter,textViewAdd,textViewFilter,backPaper);
+                }else
+                {
+                    fabIsOpen=false;
+                    animateABCClose(v,fabAdd,fabFilter,textViewAdd,textViewFilter,backPaper);
+                }
+            }
+        });
+
+
+    }
+
+    private void initFabAdd(FloatingActionButton fabAdd) {
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getActivity(), EditAssociationActivityActivity.class);
+                startActivity(intent);
+                animateABCClose(fab_function,v,fabFilter,textViewAdd,textViewFilter,backPaper);
+                fabIsOpen=false;
+
+            }
+        });
+    }
+
     class VoiceReceiver extends BroadcastReceiver
     {
         @Override
@@ -373,5 +443,76 @@ public class HomeFragment extends Fragment {
                 }
             } );
         }
+    }
+    private void animateABCOpen(View fabHead,View fabB,View fabC,View textB,View textC,View paper)
+    {
+        fabB.setVisibility(View.VISIBLE);
+        fabC.setVisibility(View.VISIBLE);
+
+        paper.setVisibility(View.VISIBLE);
+        textB.setVisibility(View.VISIBLE);
+        textC.setVisibility(View.VISIBLE);
+        ObjectAnimator animatorHead= ObjectAnimator.ofFloat(fabHead,"rotationX",0,270,0);
+        ObjectAnimator animatorB1=ObjectAnimator.ofFloat(fabB,"alpha",0,1);
+        ObjectAnimator animatorBt=ObjectAnimator.ofFloat(textB,"alpha",0,1);
+        ObjectAnimator animatorP=ObjectAnimator.ofFloat(paper,"alpha",0,0.7f);
+        ObjectAnimator animatorB2=ObjectAnimator.ofFloat(fabB,"rotationY",0,270,0);
+        ObjectAnimator animatorC1=ObjectAnimator.ofFloat(fabC,"alpha",0,1);
+        ObjectAnimator animatorCt=ObjectAnimator.ofFloat(textC,"alpha",0,1);
+        ObjectAnimator animatorC2=ObjectAnimator.ofFloat(fabC,"rotationY",0,270,0);
+
+        AnimatorSet animatorSet=new AnimatorSet();
+        animatorSet.playTogether(animatorHead,animatorB1,animatorB2,animatorC1,animatorC2,animatorBt,animatorCt,animatorP);
+        animatorSet.setDuration(800);
+        animatorSet.start();
+
+    }
+    private void animateABCClose(View fabHead,View fabB,View fabC,View textB,View textC,View paper)
+    {
+        ObjectAnimator animatorHead= ObjectAnimator.ofFloat(fabHead,"rotationX",0,270,0);
+        ObjectAnimator animatorB1=ObjectAnimator.ofFloat(fabB,"alpha",1,0);
+        ObjectAnimator animatorB2=ObjectAnimator.ofFloat(fabB,"rotationY",0,270,0);
+        ObjectAnimator animatorC1=ObjectAnimator.ofFloat(fabC,"alpha",1,0);
+        ObjectAnimator animatorC2=ObjectAnimator.ofFloat(fabC,"rotationY",0,270,0);
+        ObjectAnimator animatorP=ObjectAnimator.ofFloat(paper,"alpha",0.7f,0);
+        ObjectAnimator animatorCt=ObjectAnimator.ofFloat(textC,"alpha",1,0);
+        ObjectAnimator animatorBt=ObjectAnimator.ofFloat(textB,"alpha",1,0);
+       animatorSetClose=new AnimatorSet();
+        animatorSetClose.playTogether(animatorHead,animatorB1,animatorB2,animatorC1,animatorC2,animatorBt,animatorCt,animatorP);
+        animatorSetClose.setDuration(800);
+        animatorSetClose.start();
+        animatorBt.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+                if(fabAdd!=null)
+                    fabAdd.setVisibility(View.GONE);
+                if(fabFilter!=null)
+                    fabFilter.setVisibility(View.GONE);
+                if(textViewAdd!=null)
+                    textViewAdd.setVisibility(View.GONE);
+                if(textViewFilter!=null)
+                    textViewFilter.setVisibility(View.GONE);
+                if(backPaper!=null)
+                    backPaper.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+
     }
 }
