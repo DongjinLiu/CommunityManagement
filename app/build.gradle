@@ -46,6 +46,9 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.bigmercu.cBox:cbox:1.08'
+
+
+    compile 'com.contrarywind:Android-PickerView:3.2.4'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
