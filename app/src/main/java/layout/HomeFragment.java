@@ -38,6 +38,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jin.communitymanagement.Activity_InfoActivity;
 import com.example.jin.communitymanagement.AssociationActivity;
 import com.example.jin.communitymanagement.AssociationActivityAdapter;
 import com.example.jin.communitymanagement.EditAssociationActivityActivity;
@@ -49,6 +50,7 @@ import com.example.jin.communitymanagement.MainViewPagerAdapter;
 import com.example.jin.communitymanagement.R;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,6 +252,7 @@ public class HomeFragment extends Fragment {
 
         homeRecyclerView.setLayoutManager(layoutManager);
         association_ac_adapter =new AssociationActivityAdapter(associationActivityList);
+
         homeRecyclerView.setAdapter(association_ac_adapter);
         HeaderAdapter headerAdapter=new HeaderAdapter(association_ac_adapter);
         LayoutInflater inflater_header=LayoutInflater.from(getContext());
@@ -549,5 +552,6 @@ public class HomeFragment extends Fragment {
 
 
     }
+
 
 }

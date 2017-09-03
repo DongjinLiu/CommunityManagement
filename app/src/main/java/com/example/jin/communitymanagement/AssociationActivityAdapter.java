@@ -1,6 +1,7 @@
 package com.example.jin.communitymanagement;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,9 @@ public class AssociationActivityAdapter extends RecyclerView.Adapter<Association
 
     private List<AssociationActivity> m_association_ac_List;
     private Context mContest;
+
+
+
 
     static class ViewHolder extends RecyclerView.ViewHolder
     {
@@ -68,7 +73,32 @@ public class AssociationActivityAdapter extends RecyclerView.Adapter<Association
         }
         View view= LayoutInflater.from(mContest).inflate(R.layout.association_activity_item,parent,false);
 
+        final ViewHolder holder=new ViewHolder(view);
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position;
+                position = holder.getAdapterPosition();
+                AssociationActivity associationActivity=m_association_ac_List.get(position+1);
+                Intent intent=new Intent(mContest, Activity_InfoActivity.class);
+                intent.putExtra(Activity_InfoActivity.INTRODUCTION,associationActivity.getIntroduction());
+                intent.putExtra(Activity_InfoActivity.START_TIME,associationActivity.getStart_time());
+                intent.putExtra(Activity_InfoActivity.END_TIME,associationActivity.getEnd_time());
+                intent.putExtra(Activity_InfoActivity.ASS_NAME,associationActivity.getAssociationName());
+                intent.putExtra(Activity_InfoActivity.AC_NAME,associationActivity.getActivityName());
+                byte[] bytes=get_bit_image(associationActivity.getBitmap());
+                intent.putExtra(Activity_InfoActivity.IMAGE,bytes);
+               mContest.startActivity(intent);
+
+            }
+        });
         return new ViewHolder(view);
+    }
+    public byte[] get_bit_image(Bitmap bitmap)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
     }
 
     @Override
