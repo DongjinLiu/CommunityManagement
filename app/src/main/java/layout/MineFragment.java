@@ -17,7 +17,6 @@ public class MineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Toast.makeText(getActivity(),"Hello World!!",Toast.LENGTH_SHORT).show();
         return inflater.inflate(R.layout.fragment_mine, container, false);
     }
 
