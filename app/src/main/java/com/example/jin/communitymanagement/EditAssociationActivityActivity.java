@@ -116,6 +116,8 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
         String m_end=textViewEditEndTime.getText().toString();
         String asso_name=edit_asso_name.getText().toString();
         String introduction=edit_introduction.getText().toString();
+
+                picture.setDrawingCacheEnabled(true);
         Bitmap m_photo=picture.getDrawingCache();
         if(m_start.equals("")||m_end.equals(""))
         {
