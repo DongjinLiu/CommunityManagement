@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -38,10 +39,13 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
+import java.util.UUID;
 import java.util.jar.Manifest;
 
 
@@ -152,7 +156,33 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
     }
 
     private void add_activity_to_database(String m_start, String m_end, String asso_name, String introduction, Bitmap m_photo) {
-        Toast.makeText(this, "存储成功", Toast.LENGTH_SHORT).show();
+       String dir=saveNewPhoto(m_photo);
+        if(dir!=null)
+            Toast.makeText(this, dir, Toast.LENGTH_SHORT).show();
+    }
+
+    private String saveNewPhoto(Bitmap m_photo) {
+        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/associationManagement/MeiPhoto";
+        String state = Environment.getExternalStorageState();
+//如果状态不是mounted，无法读写  
+        if (!state.equals(Environment.MEDIA_MOUNTED)) {
+            return null;
+        }
+        String fileName=UUID.randomUUID().toString();
+//通过Random()类生成数组命名  
+
+        try{
+    File file=new File(dir+fileName+".jpg");
+     FileOutputStream out=new FileOutputStream(file);
+    m_photo.compress(Bitmap.CompressFormat.JPEG,100,out);
+    out.flush();
+    out.close();
+           Uri uri=Uri.fromFile(file);
+         sendBroadcast(new  Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+       }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dir+fileName+".jpg";
     }
 
     private void initCardView() {

@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new MyDBHelper(this, "UserStore.db", null, 1);
+        dbHelper = new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION);
 
 
 

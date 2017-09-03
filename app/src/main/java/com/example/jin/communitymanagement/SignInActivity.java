@@ -32,7 +32,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new MyDBHelper(this, "UserStore.db", null, 1);
+        dbHelper = new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION);
     }
 
     public boolean login(View view) {
