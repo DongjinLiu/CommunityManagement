@@ -12,15 +12,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditAssociationActivityActivity"
-           android:label=""></activity>
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".SignInActivity"/>
+        <activity
+            android:name=".EditAssociationActivityActivity">
+
+        </activity>
+
         <provider
             android:authorities="com.example.jin.communitymanagement.fileprovider"
             android:name="android.support.v4.content.FileProvider"
