@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.jin.communitymanagement.R;
 
-
+//fuck
 public class BorrowFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
