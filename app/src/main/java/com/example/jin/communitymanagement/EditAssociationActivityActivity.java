@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -34,9 +35,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bigkoo.pickerview.TimePickerView;
+import com.bigmercu.cBox.CheckBox;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -73,6 +76,10 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
     private EditText edit_introduction;
     private Bitmap my_bitmap;
 
+    private CheckBox in_money;
+    private EditText edit_activity_name;
+
+
 
     private TimePickerView timePickerStartView;
 
@@ -80,13 +87,16 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
 
     private Uri imageUri;
 
-    ;private NiftyDialogBuilder dialogBuilder;
+    private NiftyDialogBuilder dialogBuilder;
 
     private FloatingActionButton fab_ok;
+
+    private MyDBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_association_activity);
+        dbHelper= new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION);
         initToolBar();
         initView();
         initCardView();
@@ -101,6 +111,8 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
         edit_introduction=(EditText)findViewById(R.id.editView_edit_ac_introduction);
         edit_asso_name=(EditText)findViewById(R.id.EditView_edit_ac_association_name);
 
+        in_money=(CheckBox)findViewById(R.id.checkbox_edit_ac_is_need_money);
+        edit_activity_name=(EditText)findViewById(R.id.editView_edit_ac_activity_name);
 
         fab_ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +133,16 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
         String asso_name=edit_asso_name.getText().toString();
         String introduction=edit_introduction.getText().toString();
 
+        String activity_name=edit_activity_name.getText().toString();
+        boolean is_need_money=in_money.isChecked();
+        int in_need_money;
+        if(is_need_money)
+        {
+            in_need_money=1;
+        }else
+        {
+            in_need_money=0;
+        }
                 picture.setDrawingCacheEnabled(true);
         Bitmap m_photo=picture.getDrawingCache();
         if(m_start.equals("")||m_end.equals(""))
@@ -147,7 +169,7 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        add_activity_to_database(m_start,m_end,asso_name,introduction,m_photo);
+                        add_activity_to_database(m_start,m_end,asso_name,introduction,m_photo,activity_name,in_need_money);
                     }
                 }
             }
@@ -155,35 +177,51 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
 
     }
 
-    private void add_activity_to_database(String m_start, String m_end, String asso_name, String introduction, Bitmap m_photo) {
-       String dir=saveNewPhoto(m_photo);
-        if(dir!=null)
-            Toast.makeText(this, dir, Toast.LENGTH_SHORT).show();
+    private void add_activity_to_database(String m_start, String m_end, String asso_name, String introduction, Bitmap m_photo,String activity_name,int inNeedMoney) {
+      byte[] bytes=get_bit_image(m_photo);
+            SQLiteDatabase db=dbHelper.getWritableDatabase();
+            db.execSQL("insert into ActivityTable(time_start,time_end,association,introduction,activity_name,image,inNeedMoney) values (?,?,?,?,?,?,?)"
+                    , new Object[] {m_start,m_end,asso_name,introduction,activity_name,bytes,inNeedMoney});
+
+
+        Intent intentRefresh=new Intent("com.example.jin.communitymanagement.RefreshReceiver");
+       sendBroadcast(intentRefresh);
+
+        Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
+
+
     }
 
-    private String saveNewPhoto(Bitmap m_photo) {
-        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/associationManagement/MeiPhoto";
-        String state = Environment.getExternalStorageState();
-//如果状态不是mounted，无法读写  
-        if (!state.equals(Environment.MEDIA_MOUNTED)) {
-            return null;
-        }
-        String fileName=UUID.randomUUID().toString();
-//通过Random()类生成数组命名  
-
-        try{
-    File file=new File(dir+fileName+".jpg");
-     FileOutputStream out=new FileOutputStream(file);
-    m_photo.compress(Bitmap.CompressFormat.JPEG,100,out);
-    out.flush();
-    out.close();
-           Uri uri=Uri.fromFile(file);
-         sendBroadcast(new  Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-       }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dir+fileName+".jpg";
+    public byte[] get_bit_image(Bitmap bitmap)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        return baos.toByteArray();
     }
+
+//    private String saveNewPhoto(Bitmap m_photo) {
+//        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/associationManagement/MeiPhoto";
+//        String state = Environment.getExternalStorageState();
+////如果状态不是mounted，无法读写  
+//        if (!state.equals(Environment.MEDIA_MOUNTED)) {
+//            return null;
+//        }
+//        String fileName=UUID.randomUUID().toString();
+////通过Random()类生成数组命名  
+//
+//        try{
+//    File file=new File(dir+fileName+".jpg");
+//     FileOutputStream out=new FileOutputStream(file);
+//    m_photo.compress(Bitmap.CompressFormat.JPEG,100,out);
+//    out.flush();
+//    out.close();
+//           Uri uri=Uri.fromFile(file);
+//         sendBroadcast(new  Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+//       }catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return dir+fileName+".jpg";
+//    }
 
     private void initCardView() {
         initEditTimeCardView();

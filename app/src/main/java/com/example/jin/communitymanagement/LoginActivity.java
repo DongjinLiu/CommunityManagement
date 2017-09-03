@@ -1,10 +1,16 @@
 package com.example.jin.communitymanagement;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -12,12 +18,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LoginActivity extends AppCompatActivity {
     private MyDBHelper dbHelper;
     private EditText username;
     private EditText userpassword;
     private Button btn_login;
     private TextView tv_register;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +55,44 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION);
+        //添加了一个构造函数，初始化ActivityTable
+        List<Bitmap> bitmapList=new ArrayList<>();
+        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.letsdance);
+        for (int i = 0; i < 5; i++)
+        {
+            bitmapList.add(bitmap1);
+        }
+        dbHelper = new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION,bitmapList);
 
 
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    100);
 
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode)
+        {
+            case 100:
+                if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                {
+
+                    Toast.makeText(this, "现在可以愉快的操作啦", Toast.LENGTH_SHORT).show();
+                }else
+                {
+                    finish();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     //点击注册按钮进入注册页面

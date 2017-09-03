@@ -1,10 +1,13 @@
 package com.example.jin.communitymanagement;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by summe on 2017/8/15.
@@ -69,8 +76,9 @@ public class AssociationActivityAdapter extends RecyclerView.Adapter<Association
         AssociationActivity associationActivity=m_association_ac_List.get(position);
         holder.activityName.setText(associationActivity.getActivityName());
         holder.associationName.setText(associationActivity.getAssociationName());
-        holder.activityTime.setText(associationActivity.getMyTime());
-        Glide.with(mContest).load(associationActivity.getImageId()).into(holder.activityImage);
+        holder.activityTime.setText(associationActivity.getStart_time());
+        holder.activityImage.setImageBitmap(associationActivity.getBitmap());
+
     }
 
 

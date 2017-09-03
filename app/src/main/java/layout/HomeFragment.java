@@ -7,14 +7,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,6 +44,7 @@ import com.example.jin.communitymanagement.EditAssociationActivityActivity;
 import com.example.jin.communitymanagement.HeaderAdapter;
 import com.example.jin.communitymanagement.HomeFlag;
 import com.example.jin.communitymanagement.HomeFlagAdapter;
+import com.example.jin.communitymanagement.MainActivity;
 import com.example.jin.communitymanagement.MainViewPagerAdapter;
 import com.example.jin.communitymanagement.R;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -62,7 +70,7 @@ public class HomeFragment extends Fragment {
     private List<AssociationActivity> associationActivityList=new ArrayList<>();
 
     private AssociationActivityAdapter association_ac_adapter;
-    private AssociationActivity[] associationActivities={new AssociationActivity("热舞社ABC","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance)};
+//    private AssociationActivity[] associationActivities={new AssociationActivity("热舞社ABC","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance),new AssociationActivity("热舞社","hiphop","下午两点",R.drawable.letsdance)};
     private   RecyclerView homeRecyclerView;
 
     //属性都在这里
@@ -223,7 +231,6 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void run() {
                         initAssociationActivity();
-                        association_ac_adapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
@@ -341,15 +348,41 @@ public class HomeFragment extends Fragment {
     private void initAssociationActivity()
     {
         associationActivityList.clear();
-        for (int i=0;i<associationActivities.length;i++)
-        {
-            associationActivityList.add(associationActivities[i]);
+        SQLiteDatabase db=((MainActivity)getActivity()).getDbHelper().getWritableDatabase();
+        if(db.isOpen()) {
+            Cursor cursor2 = db.query( "ActivityTable", null, null, null, null, null, null );
+            if (cursor2.moveToFirst()) {
+
+                do {
+                    String activity_name = cursor2.getString( cursor2.getColumnIndex( "activity_name" ) );
+                    String association = cursor2.getString( cursor2.getColumnIndex( "association" ) );
+                    String introduction = cursor2.getString( cursor2.getColumnIndex( "introduction" ) );
+                    String time_start = cursor2.getString( cursor2.getColumnIndex( "time_start" ) );
+                    String time_end = cursor2.getString( cursor2.getColumnIndex( "time_end" ) );
+                    byte[] in = cursor2.getBlob(cursor2.getColumnIndex("image"));
+                    Bitmap bitmap=getBmp(in);
+                    int inNeedMoney=cursor2.getInt(  cursor2.getColumnIndex( "inNeedMoney" ) );
+                   AssociationActivity associationActivity=new AssociationActivity(association,activity_name,time_start,time_end,
+                           bitmap,
+                           introduction,inNeedMoney);
+                    associationActivityList.add( associationActivity );
+                    Log.d( TAG, "设备添加成功" );
+                } while (cursor2.moveToNext());
+            }
+            cursor2.close();
         }
-        for (int i=0;i<associationActivities.length;i++)
-        {
-            associationActivityList.add(associationActivities[i]);
-        }
+        if(association_ac_adapter!=null)
+        association_ac_adapter.notifyItemRangeChanged(0,associationActivityList.size());
+
     }
+    public Bitmap getBmp(byte[] in)
+    {
+
+
+        Bitmap bmpout = BitmapFactory.decodeByteArray(in, 0, in.length);
+        return bmpout;
+    }
+
     private List<AssociationActivity> filter(List<AssociationActivity> associationActivities, String query) {
         query = query.toLowerCase();
 
@@ -438,8 +471,9 @@ public class HomeFragment extends Fragment {
                     {
                         headerList.addAll(associationFlagList);
                     }
-                    adapterFlag.notifyDataSetChanged();
+                    adapterFlag.notifyItemRangeChanged(0,headerList.size());
 
+                   initAssociationActivity();
                 }
             } );
         }
@@ -515,4 +549,5 @@ public class HomeFragment extends Fragment {
 
 
     }
+
 }

@@ -1,10 +1,16 @@
 package com.example.jin.communitymanagement;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
 
+    private MyDBHelper dbHelper;
 
 
     private MaterialSearchView searchView;
@@ -66,15 +73,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        List<Bitmap> bitmapList=new ArrayList<>();
+        Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.letsdance);
+        for (int i = 0; i < 5; i++)
+        {
+            bitmapList.add(bitmap1);
+        }
+        dbHelper= new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION,bitmapList);
+
 
         ButterKnife.bind(this);
         setContentView(R.layout.activity_main);
         operateToolBar();
         initBottomNavigation();
 
-        initViewPager();
 
-        initSearchView();
+
+
+            initViewPager();
+
+            initSearchView();
+
 
 
     }
@@ -247,6 +266,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public MyDBHelper getDbHelper()
+    {
+        return  dbHelper;
+    }
 
 
 
