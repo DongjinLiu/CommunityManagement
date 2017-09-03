@@ -13,6 +13,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContentResolverCompat;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -59,6 +61,13 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
     private TextView textEditTimeSV;
     private TextView textEditTimeEV;
     private ImageView picture;
+    private Date dateStart;
+    private Date dateEnd;
+    private String timeStart="";
+    private String timeEnd="";
+    private EditText edit_asso_name;
+    private EditText edit_introduction;
+    private Bitmap my_bitmap;
 
 
     private TimePickerView timePickerStartView;
@@ -68,6 +77,8 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
     private Uri imageUri;
 
     ;private NiftyDialogBuilder dialogBuilder;
+
+    private FloatingActionButton fab_ok;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +93,64 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
     private void initView() {
         picture=(ImageView)findViewById(R.id.imageView_edit_ac_img);
         dialogBuilder=NiftyDialogBuilder.getInstance(this);
+        fab_ok=(FloatingActionButton)findViewById(R.id.fab_edit_association_ac_ok);
+        edit_introduction=(EditText)findViewById(R.id.editView_edit_ac_introduction);
+        edit_asso_name=(EditText)findViewById(R.id.EditView_edit_ac_association_name);
+
+
+        fab_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                add_new_activity();
+            }
+        });
 
 
 
 
+    }
+
+    private void add_new_activity() {
+
+        String m_start= textViewEditStartTime.getText().toString();
+        String m_end=textViewEditEndTime.getText().toString();
+        String asso_name=edit_asso_name.getText().toString();
+        String introduction=edit_introduction.getText().toString();
+        Bitmap m_photo=picture.getDrawingCache();
+        if(m_start.equals("")||m_end.equals(""))
+        {
+            Toast.makeText(this, "请选择活动时间", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            if(asso_name.length()<2)
+            {
+                Toast.makeText(this, "请完善社团名字", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                if(introduction.length()<15)
+                {
+                    Toast.makeText(this, "活动介绍必须在15字以上", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    if(m_photo==null)
+                    {
+                        Toast.makeText(this, "请选择活动照片", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        add_activity_to_database(m_start,m_end,asso_name,introduction,m_photo);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void add_activity_to_database(String m_start, String m_end, String asso_name, String introduction, Bitmap m_photo) {
+        Toast.makeText(this, "存储成功", Toast.LENGTH_SHORT).show();
     }
 
     private void initCardView() {
@@ -318,9 +383,9 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
             @Override
             public void onTimeSelect(Date date,View v) {//选中事件回调
                 SimpleDateFormat sm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date d = new Date(date.getTime());
-                String times = sm.format(d);
-                textViewEditStartTime.setText("开始时间："+times);
+                dateStart= new Date(date.getTime());
+                timeStart = sm.format(dateStart);
+                textViewEditStartTime.setText("开始时间："+timeStart);
                 textEditTimeSV.setVisibility(View.GONE );
             }
         })
@@ -334,9 +399,9 @@ public class EditAssociationActivityActivity extends AppCompatActivity {
             @Override
             public void onTimeSelect(Date date,View v) {//选中事件回调
                 SimpleDateFormat sm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date d = new Date(date.getTime());
-                String times = sm.format(d);
-                textViewEditEndTime.setText("结束时间："+times);
+                dateEnd = new Date(date.getTime());
+                timeEnd= sm.format(dateEnd);
+                textViewEditEndTime.setText("结束时间："+timeEnd);
                 textEditTimeEV.setVisibility(View.GONE );
             }
         })
