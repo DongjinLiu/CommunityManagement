@@ -11,7 +11,7 @@ public class AssociationActivity {
     private String activityName;
     private String myTime;
     private int imageId;
-
+    //op
     public AssociationActivity(String associationName, String activityName, String myTime, int imageId) {
         this.associationName = associationName;
         this.activityName = activityName;
