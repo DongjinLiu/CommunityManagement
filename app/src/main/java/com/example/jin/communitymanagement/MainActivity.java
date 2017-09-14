@@ -159,7 +159,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initViewPager()

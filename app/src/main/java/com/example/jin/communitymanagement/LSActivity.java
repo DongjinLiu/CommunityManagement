@@ -14,11 +14,7 @@ import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -49,6 +45,7 @@ public class LSActivity extends AppCompatActivity implements View.OnClickListene
     private TextInputEditText password2_register;
     private TextInputEditText username_login;
     private TextInputEditText password_login;
+
 
 
     @Override
