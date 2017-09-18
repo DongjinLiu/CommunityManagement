@@ -61,25 +61,27 @@ public class MainActivity extends AppCompatActivity {
 
     //做标签，说明现在是属于哪一个fragment
     public static int MARK = 0;
+    public static String userName;
 
 
     //HomeFragment控件区域
-
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        String name = getIntent().getStringExtra("userName");
+        if (name != null) {
+            userName = name;
+        }
 
-        List<Bitmap> bitmapList=new ArrayList<>();
+        List<Bitmap> bitmapList = new ArrayList<>();
         Bitmap bitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.letsdance);
-        for (int i = 0; i < 5; i++)
-        {
+        for (int i = 0; i < 5; i++) {
             bitmapList.add(bitmap1);
         }
-        dbHelper= new MyDBHelper(this, "UserStore.db", null,BaseActivity.DATABASE_VERSION,bitmapList);
+        dbHelper = new MyDBHelper(this, "UserStore.db", null, BaseActivity.DATABASE_VERSION, bitmapList);
 
 
         ButterKnife.bind(this);
@@ -88,12 +90,9 @@ public class MainActivity extends AppCompatActivity {
         initBottomNavigation();
 
 
+        initViewPager();
 
-
-            initViewPager();
-
-            initSearchView();
-
+        initSearchView();
 
 
     }
@@ -128,16 +127,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     //初始化搜索框
-    private void initSearchView()
-    {
+    private void initSearchView() {
 
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
 
 
-
     }
-
 
 
     //语音识别反馈
@@ -149,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 String searchWrd = matches.get(0);
                 if (!TextUtils.isEmpty(searchWrd)) {
                     Log.d(TAG, "onActivityResult: 到if里面啦");
-                    Intent intentVoice=new Intent("com.example.jin.communitymanagement.GET_THE_VOICE");
-                    intentVoice.putExtra(HomeFragment.GET_THE_VOICE,searchWrd);
+                    Intent intentVoice = new Intent("com.example.jin.communitymanagement.GET_THE_VOICE");
+                    intentVoice.putExtra(HomeFragment.GET_THE_VOICE, searchWrd);
                     sendBroadcast(intentVoice);
                 }
 
@@ -166,8 +162,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initViewPager()
-    {
+    private void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         List<Fragment> fragments = new ArrayList<>();
         fragments.clear();
@@ -176,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new DateFragment());
         fragments.add(new MoneyFragment());
         fragments.add(new MineFragment());
-        adapter=new MainViewPagerAdapter(getSupportFragmentManager(),fragments);
+        adapter = new MainViewPagerAdapter(getSupportFragmentManager(), fragments);
 
 //        MainViewPagerAdapter.setHomeFragment(new HomeFragment());
 //       MainViewPagerAdapter.setBorrowFragment(new BorrowFragment());
@@ -205,14 +200,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initBottomNavigation()
-    {
-        bottomNavigation=(AHBottomNavigation)findViewById(R.id.bottom_navigation);
-        AHBottomNavigationItem item1=new AHBottomNavigationItem("主页",R.drawable.home,R.color.colorText);
-        AHBottomNavigationItem item2=new AHBottomNavigationItem("租赁",R.drawable.borrow,R.color.colorPrimaryDark);
-        AHBottomNavigationItem item3=new AHBottomNavigationItem("日程", R.drawable.date,R.color.colorPrimary);
-        AHBottomNavigationItem item4=new AHBottomNavigationItem("赞助",R.drawable.money,R.color.colorPrimary);
-        AHBottomNavigationItem item5=new AHBottomNavigationItem("我的",R.drawable.mine,R.color.colorPrimary);
+    private void initBottomNavigation() {
+        bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
+        AHBottomNavigationItem item1 = new AHBottomNavigationItem("主页", R.drawable.home, R.color.colorText);
+        AHBottomNavigationItem item2 = new AHBottomNavigationItem("租赁", R.drawable.borrow, R.color.colorPrimaryDark);
+        AHBottomNavigationItem item3 = new AHBottomNavigationItem("日程", R.drawable.date, R.color.colorPrimary);
+        AHBottomNavigationItem item4 = new AHBottomNavigationItem("赞助", R.drawable.money, R.color.colorPrimary);
+        AHBottomNavigationItem item5 = new AHBottomNavigationItem("我的", R.drawable.mine, R.color.colorPrimary);
         bottomNavigation.addItem(item1);
         bottomNavigation.addItem(item2);
         bottomNavigation.addItem(item3);
@@ -223,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
 
 // Disable the translation inside the CoordinatorLayout
         bottomNavigation.setBehaviorTranslationEnabled(false);
-
 
 
 // Change colors
@@ -250,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTabSelected(int position, boolean wasSelected) {
 
                 viewPager.setCurrentItem(position);
-                MARK=position;
+                MARK = position;
                 return true;
             }
         });
@@ -260,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar,menu);
+        getMenuInflater().inflate(R.menu.toolbar, menu);
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
@@ -270,11 +263,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public MyDBHelper getDbHelper()
-    {
-        return  dbHelper;
+    public MyDBHelper getDbHelper() {
+        return dbHelper;
     }
-
 
 
 }

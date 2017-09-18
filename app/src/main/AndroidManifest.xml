@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".EditAssociationActivityActivity"/>
+        <activity android:name=".EditAssociationActivityActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -29,12 +29,11 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <activity android:name=".Activity_InfoActivity"/>
+        <activity android:name=".Activity_InfoActivity" />
+        <activity android:name=".EditProfilesActivity"></activity>
     </application>
 
 </manifest>
