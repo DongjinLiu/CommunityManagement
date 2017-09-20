@@ -41,6 +41,7 @@ import com.example.jin.communitymanagement.MyDBHelper;
 import com.example.jin.communitymanagement.R;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
+import com.gitonway.lee.niftymodaldialogeffects.lib.effects.FlipV;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,8 +54,9 @@ public class MineFragment extends Fragment {
 
     private NiftyDialogBuilder dialogBuilder;
     Uri imgUri;
-    ImageView profile_icon;
-    TextView mine_tv_setProfiles;
+    ImageView profile_icon,profile_gender;
+    TextView mine_tv_setProfiles, mine_tv_nickname, mine_tv_position, mine_tv_address,
+            mine_tv_hobbits, mine_tv_goal, mine_tv_demand;
     private MyDBHelper dbHelper;
 
     private static final int PICK_FROM_CAMERA = 1;
@@ -74,7 +76,17 @@ public class MineFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
         profile_icon = (ImageView) view.findViewById(R.id.profile_icon);
+        profile_gender = (ImageView) view.findViewById(R.id.profile_gender);
+
         mine_tv_setProfiles = (TextView) view.findViewById(R.id.mine_tv_setProfiles);
+        mine_tv_nickname = (TextView) view.findViewById(R.id.mine_tv_nickname);
+        mine_tv_position = (TextView) view.findViewById(R.id.mine_tv_position);
+        mine_tv_address = (TextView) view.findViewById(R.id.mine_tv_address);
+        mine_tv_hobbits = (TextView) view.findViewById(R.id.mine_tv_hobbits);
+        mine_tv_goal = (TextView) view.findViewById(R.id.mine_tv_goal);
+        mine_tv_demand = (TextView) view.findViewById(R.id.mine_tv_demand);
+
+
         dbHelper = new MyDBHelper(getActivity(), "UserStore.db", null, BaseActivity.DATABASE_VERSION);
 
         try {
@@ -82,15 +94,24 @@ public class MineFragment extends Fragment {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, new String[]{MainActivity.userName});
             if (cursor.moveToFirst()) {
+                mine_tv_nickname.setText(cursor.getString(3));
+                if(cursor.getString(4).contains("男")) profile_gender.setImageResource(R.drawable.profile_gender_male3);
+                else if(cursor.getString(4).contains("女")) profile_gender.setImageResource(R.drawable.profile_gender_female2);
+                mine_tv_position.setText("社团职位: " + cursor.getString(6));
+                mine_tv_address.setText("宿舍住址: " + cursor.getString(7));
+                mine_tv_hobbits.setText("兴趣爱好: " + cursor.getString(8));
+                mine_tv_goal.setText("人生目标: " + cursor.getString(9));
+                mine_tv_demand.setText("社团要求: " + cursor.getString(10));
+
                 String iconPath = cursor.getString(5);
                 if (iconPath != null) profile_icon.setImageBitmap(toRoundCorner
                         (BitmapFactory.decodeFile(iconPath), 100));
-            }else Log.e("Didn't found :","没有找到用户名下的头像数据");
+            } else Log.e("Didn't found :", "没有找到用户名下的数据");
             cursor.close();
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
-        /*
+        /* //直接从头像文件夹里选择最新的头像
         File iconDir = new File(Environment.getExternalStorageDirectory() + File.separator + "Meituan" +
                 File.separator + "crop_icons");
         File[] iconFiles = iconDir.listFiles();
@@ -400,5 +421,34 @@ public class MineFragment extends Fragment {
             }
         }
         super.onDestroy();
+    }
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+
+            dbHelper = new MyDBHelper(getActivity(), "UserStore.db", null, BaseActivity.DATABASE_VERSION);
+
+            try {
+                String sql = "select * from user where name=?";
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                Cursor cursor = db.rawQuery(sql, new String[]{MainActivity.userName});
+                if (cursor.moveToFirst()) {
+                    mine_tv_nickname.setText(cursor.getString(3));
+                    mine_tv_position.setText("社团职位: " + cursor.getString(6));
+                    mine_tv_address.setText("宿舍住址: " + cursor.getString(7));
+                    mine_tv_hobbits.setText("兴趣爱好: " + cursor.getString(8));
+                    mine_tv_goal.setText("人生目标: " + cursor.getString(9));
+                    mine_tv_demand.setText("社团要求: " + cursor.getString(10));
+
+                    String iconPath = cursor.getString(5);
+                    if (iconPath != null) profile_icon.setImageBitmap(toRoundCorner
+                            (BitmapFactory.decodeFile(iconPath), 100));
+                } else Log.e("Didn't found :", "没有找到用户名下的数据");
+                cursor.close();
+            } catch (SQLiteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,7 +1,10 @@
 package com.example.jin.communitymanagement;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -72,8 +75,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         String name = getIntent().getStringExtra("userName");
+        dbHelper = new MyDBHelper(this, "UserStore.db", null, BaseActivity.DATABASE_VERSION);
         if (name != null) {
             userName = name;
+            String sql = "select * from user where name=?";
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            Cursor cursor = db.rawQuery(sql, new String[]{MainActivity.userName});
+            if (cursor.moveToFirst()) {
+
+                if(cursor.getString(3) == null){
+                    ContentValues values = new ContentValues();
+                    values.put("nickname", "用户user_" + String.format("%07d", cursor.getInt(0)));//key为字段名，value为值
+                    db.update("user", values, "name=?", new String[]{userName});
+                    db.close();
+                }
+            }
+            cursor.close();
+
         }
 
         List<Bitmap> bitmapList = new ArrayList<>();
