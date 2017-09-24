@@ -213,6 +213,7 @@ public class LSActivity extends AppCompatActivity implements View.OnClickListene
         if (login(userName, passWord)) {
             Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this,MainActivity.class);
+            intent.putExtra("userName",userName);
             startActivity(intent);
             finish();
         }
@@ -225,7 +226,15 @@ public class LSActivity extends AppCompatActivity implements View.OnClickListene
         if(!exits("user"))
             db.execSQL("create table user(id integer primary key ,"
                     + "name varchar(255),"
-                    + "password varchar(255))");
+                    + "password varchar(255),"
+                    + "nickname varchar(50),"
+                    + "gender  varchar(2),"
+                    + "photo varchar(255),"
+                    + "position varchar(50),"
+                    + "address varchar(255),"
+                    + "hobbits varchar(255),"
+                    + "goal varchar(255),"
+                    + "demand varchar(255))");
         try {
             sql = "select * from user where name=? and password=?";
             Cursor cursor = db.rawQuery(sql, new String[]{username, password});
@@ -302,7 +311,15 @@ public class LSActivity extends AppCompatActivity implements View.OnClickListene
             if (!exits("user"))
                 db.execSQL("create table user(id integer primary key ,"
                         + "name varchar(255),"
-                        + "password varchar(255))");
+                        + "password varchar(255),"
+                        + "nickname varchar(50),"
+                        + "gender  varchar(2),"
+                        + "photo varchar(255),"
+                        + "position varchar(50),"
+                        + "address varchar(255),"
+                        + "hobbits varchar(255),"
+                        + "goal varchar(255),"
+                        + "demand varchar(255))");
 
             ContentValues values = new ContentValues();
             values.put("name", username);
@@ -352,7 +369,7 @@ public class LSActivity extends AppCompatActivity implements View.OnClickListene
     public boolean checkName(String str) {
 
         // 编译正则表达式
-        Pattern pattern = Pattern.compile("[a-zA-Z]{1}[a-zA-Z0-9_]{1,15}");
+        Pattern pattern = Pattern.compile("[a-zA-Z]{1}[A-Za-z0-9_]{1,15}");
         // 忽略大小写的写法
         // Pattern pat = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(str);
